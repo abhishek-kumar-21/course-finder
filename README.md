@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Free Course Finder
 
-## Getting Started
+An AI-powered course discovery platform built with **Next.js 16** and **Gemini 2.5 Flash** that finds the best **100% free**, high-quality learning resources from the live internet - without YouTube spam or paid course junk.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features
+
+* **AI-Driven Search:** Uses Gemini 2.5 Flash with Google Search grounding
+* **Strict Content Filtering**
+
+  * ✅ Interactive platforms (freeCodeCamp, Odin Project)
+  * ✅ Official documentation (MDN, framework docs)
+  * ✅ University archives (MIT OpenCourseWare)
+  * 🚫 YouTube playlists, Udemy, paywalled content
+* **Smart Categorization:** Interactive · Documentation · University Course
+* **Modern UI:** Glassmorphism, skeleton loaders, trending topic suggestions
+
+---
+
+## 🛠 Tech Stack
+
+* **Framework:** Next.js 16 (App Router)
+* **Language:** TypeScript
+* **AI:** Gemini 2.5 Flash
+* **Styling:** Tailwind CSS + Lucide React
+* **API:** Edge Functions
+
+---
+
+## 📂 Project Structure
+
+```text
+/
+├── app/
+│   ├── api/recommend/   # Gemini-powered API
+│   ├── layout.tsx
+│   └── page.tsx
+│
+├── components/
+│   ├── search/          # Search + suggestions
+│   ├── courses/         # Course cards & loaders
+│   └── ui/              # Shared UI components
+│
+├── lib/
+│   └── prompts.ts       # Strict prompt rules
+│
+└── types/
+    └── index.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧠 How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. User enters a topic
+2. Gemini searches the live web
+3. Paid, video-only, and low-quality sources are rejected
+4. Top free resources are returned as structured JSON
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+git clone https://github.com/abhishek-kumar-21/course-finder
+cd course-finder
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create `.env.local`:
 
-## Deploy on Vercel
+```env
+GEMINI_API_KEY=your_api_key_here
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open: [http://localhost:3000](http://localhost:3000)
