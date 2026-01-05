@@ -4,5 +4,10 @@ export interface Course {
   instructor: string;
   description: string;
   url: string;
-  type: string;
+  skills?: string[];
+  duration?: string;
+  language?: string;
+  certificate?: "Free" | "Paid" | "No";
+  thumbnail?: string;
+  type?: string; 
 }

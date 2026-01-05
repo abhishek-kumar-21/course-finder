@@ -1,29 +1,31 @@
 export function generateCoursePrompt(topic: string) {
-    return `
-      Find the top 5 best **100% FREE** website-based courses or text/interactive tutorials for learning: "${topic}".
-      
-      Search Guidelines:
-      1. **STRICTLY EXCLUDE YouTube.** Do not provide video links from YouTube or similar video-only aggregators.
-      2. Prioritize: 
-         - **Interactive Platforms:** freeCodeCamp, The Odin Project, Scrimba (free tier), W3Schools, Codecademy (free tier).
-         - **University Archives:** MIT OpenCourseWare, Harvard CS50 notes, Stanford Online.
-         - **Official Documentation:** (e.g., React.dev, Python.org docs, MDN Web Docs).
-         - **Reputable Text Guides:** Roadmap.sh, GeeksforGeeks, Dev.to guides.
-      3. The resource must be accessible directly via a website URL.
-      4. Ensure the content is free (no paywall for the core learning material).
-      
-      Return the response in strictly valid JSON format:
-      {
-        "courses": [
-          {
-            "title": "Course/Guide Name",
-            "platform": "Website Name (e.g., MDN, The Odin Project)",
-            "instructor": "Author or Organization",
-            "description": "Why this website resource is excellent (1 sentence).",
-            "url": "https://link-to-website",
-            "type": "Interactive" or "Documentation" or "University Course"
-          }
-        ]
-      }
-    `;
+  return `
+    Find the top 5 best **VIDEO COURSES** available on the internet for learning: "${topic}".
+
+    Search & Filtering Guidelines:
+    1. **STRICTLY VIDEO ONLY:** The course MUST be a video-based format.
+    2. **EXCLUDE DOCUMENTATION:** Do NOT provide links to text-based tutorials.
+    3. **PRIORITIZE CERTIFICATES:** Look for courses that offer a certificate.
+    4. **INCLUDE "FREEMIUM":** Prioritize platforms like Coursera, edX, NPTEL, Swayam.
+    5. **Direct URLs:** Provide the direct link to the course page.
+
+    **Do NOT search for images or thumbnails.**
+
+    Return the response in strictly valid JSON format:
+    {
+      "courses": [
+        {
+          "title": "Course Name",
+          "platform": "Platform Name (e.g., Coursera)",
+          "instructor": "Instructor Name",
+          "description": "A punchy 1-sentence summary.",
+          "url": "https://link-to-course",
+          "skills": ["Skill 1", "Skill 2", "Skill 3"],
+          "duration": "e.g. 12 Weeks",
+          "language": "e.g. English",
+          "certificate": "Free" or "Paid" or "No"
+        }
+      ]
+    }
+  `;
 }

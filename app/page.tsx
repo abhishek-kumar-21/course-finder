@@ -17,13 +17,32 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // --- LOGIC: Assign Random Local Images ---
+  const assignRandomImages = (fetchedCourses: Course[]) => {
+    // 1. Create an array of your file names (1 to 10)
+    const availableImages = [
+      "01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", 
+      "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg"
+    ];
+
+    // 2. Shuffle the array so the order is random every time
+    const shuffled = availableImages.sort(() => 0.5 - Math.random());
+
+    // 3. Map courses and assign an image
+    return fetchedCourses.map((course, index) => ({
+      ...course,
+      // Use the modulo operator (%) to loop back if you have more courses than images
+      thumbnail: `/course-patterns/${shuffled[index % shuffled.length]}`
+    }));
+  };
+
   const fetchCourses = async (query: string) => {
     if (!query.trim()) return;
 
     setLoading(true);
     setCourses([]);
     setHasSearched(true);
-    setTopic(query); // Ensure input reflects the search
+    setTopic(query);
 
     try {
       const res = await fetch("/api/recommend", {
@@ -33,8 +52,11 @@ export default function Home() {
       });
 
       const data = await res.json();
+      
       if (data.courses) {
-        setCourses(data.courses);
+        // Inject the local images here before setting state
+        const coursesWithImages = assignRandomImages(data.courses);
+        setCourses(coursesWithImages);
       }
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -55,10 +77,8 @@ export default function Home() {
 
       <div className="max-w-5xl mx-auto px-6 py-20 space-y-16">
         
-        {/* Header Section */}
         <Header />
 
-        {/* Search Section */}
         <div className="max-w-2xl mx-auto space-y-6">
           <SearchBar 
             topic={topic} 
@@ -72,9 +92,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* Results Section */}
         <div className="space-y-6 min-h-100">
-          
           {loading && (
             <div className="grid gap-6 md:grid-cols-2">
               {[...Array(4)].map((_, i) => (
