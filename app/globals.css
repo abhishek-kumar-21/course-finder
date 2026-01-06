@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-spin-slow: spin 8s linear infinite;
+  --animate-ping-slow: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-ping-slower: ping 4s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+}
+
 button:not([disabled]),
 [role="button"]:not([disabled]) {
     cursor: pointer;

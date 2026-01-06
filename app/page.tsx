@@ -9,35 +9,38 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SearchBar } from "@/components/search/search-bar";
 import { Suggestions } from "@/components/search/suggestions";
 import { CourseCard } from "@/components/courses/course-card";
-import { CourseSkeleton } from "@/components/courses/course-skeleton";
+import { AiAnalysisLoader } from "@/components/ui/ai-analysis-loader";
+import { LanguageSelector } from "@/components/search/language-selector";
 
 export default function Home() {
   const [topic, setTopic] = useState("");
+  // Default language is English
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["English"]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // --- LOGIC: Assign Random Local Images ---
+  // Logic to assign random local images
   const assignRandomImages = (fetchedCourses: Course[]) => {
-    // 1. Create an array of your file names (1 to 10)
     const availableImages = [
       "01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", 
       "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg"
     ];
-
-    // 2. Shuffle the array so the order is random every time
     const shuffled = availableImages.sort(() => 0.5 - Math.random());
-
-    // 3. Map courses and assign an image
     return fetchedCourses.map((course, index) => ({
       ...course,
-      // Use the modulo operator (%) to loop back if you have more courses than images
       thumbnail: `/course-patterns/${shuffled[index % shuffled.length]}`
     }));
   };
 
   const fetchCourses = async (query: string) => {
     if (!query.trim()) return;
+    
+    // Safety check
+    if (selectedLanguages.length === 0) {
+        alert("Please select at least one language.");
+        return;
+    }
 
     setLoading(true);
     setCourses([]);
@@ -48,18 +51,29 @@ export default function Home() {
       const res = await fetch("/api/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: query }),
+        // Send both topic and selected languages to the backend
+        body: JSON.stringify({ topic: query, languages: selectedLanguages }),
       });
+
+      if (res.status === 429) {
+        alert("You are searching too fast! Please wait a minute and try again.");
+        setLoading(false);
+        return;
+      }
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
       const data = await res.json();
       
       if (data.courses) {
-        // Inject the local images here before setting state
         const coursesWithImages = assignRandomImages(data.courses);
         setCourses(coursesWithImages);
       }
     } catch (error) {
       console.error("Error fetching courses:", error);
+      alert("Something went wrong. Please check your internet connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -79,13 +93,26 @@ export default function Home() {
         
         <Header />
 
-        <div className="max-w-2xl mx-auto space-y-6">
-          <SearchBar 
-            topic={topic} 
-            setTopic={setTopic} 
-            onSearch={handleFormSubmit} 
-            loading={loading} 
+        <div className="max-w-2xl mx-auto space-y-8">
+          {/* Language Selector Component */}
+          <LanguageSelector 
+            selectedLanguages={selectedLanguages}
+            setSelectedLanguages={setSelectedLanguages}
           />
+
+          <div className="space-y-3">
+             <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              Step 2: Enter Skill or Topic
+            </p>
+            <SearchBar 
+              topic={topic} 
+              setTopic={setTopic} 
+              onSearch={handleFormSubmit} 
+              loading={loading}
+              // Pass condition to enable/disable search button
+              canSearch={selectedLanguages.length > 0}
+            />
+          </div>
           
           {!hasSearched && !loading && (
             <Suggestions onSelect={fetchCourses} />
@@ -93,12 +120,9 @@ export default function Home() {
         </div>
 
         <div className="space-y-6 min-h-100">
+          {/* Show new AI Analysis Loader when searching */}
           {loading && (
-            <div className="grid gap-6 md:grid-cols-2">
-              {[...Array(4)].map((_, i) => (
-                <CourseSkeleton key={i} />
-              ))}
-            </div>
+            <AiAnalysisLoader />
           )}
 
           {!loading && hasSearched && courses.length === 0 && (

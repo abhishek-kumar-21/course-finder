@@ -6,21 +6,25 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: Request) {
   try {
-    const { topic } = await req.json();
+    // Extract topic AND languages from the request body
+    const { topic, languages } = await req.json();
 
     if (!topic) {
       return NextResponse.json({ error: "Topic is required" }, { status: 400 });
     }
 
+    // Ensure at least one language is selected
+    if (!languages || !Array.isArray(languages) || languages.length === 0) {
+        return NextResponse.json({ error: "At least one language is required" }, { status: 400 });
+    }
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      tools: [
-        { googleSearch: {} } as any
-      ],
+      tools: [{ googleSearch: {} } as any],
     });
 
-    // Generate the prompt dynamically using the helper function
-    const prompt = generateCoursePrompt(topic);
+    // Generate the prompt with topic and selected languages
+    const prompt = generateCoursePrompt(topic, languages);
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -33,7 +37,7 @@ export async function POST(req: Request) {
     return NextResponse.json(data);
 
   } catch (error) {
-    console.error("Some Error Occured!:", error);
+    console.error("Gemini API Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch courses." },
       { status: 500 }
