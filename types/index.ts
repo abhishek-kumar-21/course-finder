@@ -1,3 +1,10 @@
+export interface SearchResult {
+  title: string;
+  link: string;
+  snippet: string;
+  source?: string;
+}
+
 export interface Course {
   title: string;
   platform: string;
@@ -8,6 +15,6 @@ export interface Course {
   duration?: string;
   language?: string;
   certificate?: "Free" | "Paid" | "No";
-  thumbnail?: string;
+  thumbnail?: string; 
   type?: string; 
 }

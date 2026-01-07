@@ -1,36 +1,37 @@
-export function generateCoursePrompt(topic: string, languages: string[]) {
-  // Create a string like "English" or "English or Hindi"
-  const languageString = languages.join(" or ");
+import { SearchResult } from "@/types";
 
+export function generateRAGPrompt(topic: string, languages: string[], results: SearchResult[]) {
   return `
-    Find the top 5 best **VIDEO COURSES** available on the internet for learning: "${topic}".
-
-    **CRITICAL SEARCH & FILTERING GUIDELINES:**
+    I have a list of search results for "${topic}" in ${languages.join(", ")}.
     
-    1.  **LANGUAGE IS KEY:** The course MUST be taught in **${languageString}**. Do NOT provide courses in other languages.
-    2.  **STRICTLY VIDEO ONLY:** The course MUST be a video-based format. Do NOT provide text-based tutorials or documentation.
-    3.  **CERTIFICATE INFORMATION:** For each course, you MUST determine the certificate status.
-        - "Free": The certificate is given free of charge upon completion.
-        - "Paid": The content might be free (freemium), but the certificate requires payment (e.g., Coursera, edX, NPTEL).
-        - "No": No certificate is offered.
-    4.  **PRIORITIZE REPUTABLE SOURCES:** Look for courses from well-known platforms like Coursera, edX, NPTEL, Swayam, Udemy (if free/high quality), and reputable universities.
-    5.  **DIRECT URLs:** Provide the direct link to the course page.
+    Here are the search results:
+    ${JSON.stringify(results)}
 
-    **Do NOT search for images or thumbnails.**
+    **Your Task:**
+    1. Analyze these search results.
+    2. Select the top 5 most relevant courses.
+    3. For each selected course, use the specific "link" provided in the search result. **DO NOT INVENT NEW LINKS.**
+    4. Infer the "skills", "duration" (guess if not shown), and "certificate" status based on the snippet and platform.
+    
+    **Constraints:**
+    - **STRICTLY EXCLUDE YOUTUBE:** If any YouTube link slipped through, discard it immediately.
+    - Only include Video Courses.
+    - Map "certificate" to "Free", "Paid", or "No" based on the platform.
+    - Return strict JSON.
 
-    Return the response in strictly valid JSON format:
+    Output JSON Format:
     {
       "courses": [
         {
-          "title": "Course Name",
-          "platform": "Platform Name (e.g., Coursera, NPTEL)",
-          "instructor": "Instructor or University Name",
-          "description": "A punchy 1-sentence summary of the course focus.",
-          "url": "https://direct-link-to-course",
-          "skills": ["Skill 1", "Skill 2", "Skill 3"],
-          "duration": "e.g. 12 Weeks",
-          "language": "The language of instruction (must be one of: ${languageString})",
-          "certificate": "Free" or "Paid" or "No"
+          "title": "Exact Title from result",
+          "platform": "Platform Name",
+          "instructor": "Inferred from snippet",
+          "description": "Short summary",
+          "url": "THE_EXACT_LINK_FROM_INPUT",
+          "skills": ["Skill 1", "Skill 2"],
+          "duration": "e.g. 4 Weeks",
+          "language": "Inferred Language",
+          "certificate": "Free" | "Paid" | "No"
         }
       ]
     }
