@@ -73,6 +73,7 @@ Create `.env.local`:
 
 ```env
 GEMINI_API_KEY=your_api_key_here
+SERPER_API_KEY=your_api_key_here
 ```
 
 Open: [http://localhost:3000](http://localhost:3000)
